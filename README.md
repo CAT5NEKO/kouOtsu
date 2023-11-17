@@ -1,29 +1,6 @@
-# keiyaku
+# 契約書甲乙変換ツール
 
-This template should help get you started developing with Vue 3 in Vite.
+契約書に書いてある甲と乙、長時間読み通してるとこんがらがってくるので、自分の名前や相手の会社に置き換えられるツールを作りました。
+[こちら](https://kouotsu.netlify.app)で動作確認ができます。
 
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
+![タイトルなし](https://github.com/CAT5NEKO/kouOtsu/assets/111590457/3c7f2321-37ea-4e99-ab1d-b478911ebe6f)
