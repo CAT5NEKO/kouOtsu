@@ -1,19 +1,25 @@
 <template>
   <div id="app">
     <div class="container">
-      <div class="form-container flex-container">
+      <div class="form-container flex-container column-container">
         <label for="partyA">甲の名前：</label>
         <input type="text" v-model="partyA" id="partyA" class="input-field" />
 
         <label for="partyB">乙の名前：</label>
         <input type="text" v-model="partyB" id="partyB" class="input-field" />
 
-        <div class="flex-container" v-for="(party, index) in parties" :key="index">
-          <label :for="'party' + (index + 3)">{{ `${index + 3}の変換対象：` }}</label>
-          <input type="text" v-model="parties[index].label" :id="'party' + (index + 3) + '_label'" class="input-field" />
+        <div class="flex-container column-container" v-for="(party, index) in parties" :key="index">
+          <div class="flex-container">
+            <div>
+              <label :for="'party' + (index + 3)">{{ `${index + 3}の変換対象：` }}</label>
+              <input type="text" v-model="parties[index].label" :id="'party' + (index + 3) + '_label'" class="input-field" />
+            </div>
 
-          <label :for="'party' + (index + 3) + '_name'">{{ '変換したい名前：' }}</label>
-          <input type="text" v-model="parties[index].name" :id="'party' + (index + 3) + '_name'" class="input-field" />
+            <div>
+              <label :for="'party' + (index + 3) + '_name'">{{ '変換したい名前：' }}</label>
+              <input type="text" v-model="parties[index].name" :id="'party' + (index + 3) + '_name'" class="input-field" />
+            </div>
+          </div>
 
           <button @click="removeParty(index)" class="remove-party-button">削除</button>
         </div>
@@ -146,6 +152,9 @@ export default {
 
 .flex-container {
   display: flex;
+}
+
+.column-container {
   flex-direction: column;
 }
 
