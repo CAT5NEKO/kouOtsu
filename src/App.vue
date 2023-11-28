@@ -77,7 +77,15 @@ export default {
       this.generatedContract = this.formattedContract;
     },
     addParty() {
-      const newPartyLabel = `名前${this.parties.length + 3}`;
+      const heavenlyStems = ["丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
+      let newPartyLabel = "";
+
+      if (this.parties.length < heavenlyStems.length) {
+        newPartyLabel = heavenlyStems[this.parties.length];
+      } else {
+        newPartyLabel = `名前${this.parties.length + 3}`;
+      }
+
       this.parties.push({ name: "", label: newPartyLabel });
     },
     removeParty(index) {
