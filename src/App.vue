@@ -1,14 +1,14 @@
 <template>
   <div id="app">
     <div class="container">
-      <div class="form-container">
+      <div class="form-container flex-container">
         <label for="partyA">甲の名前：</label>
         <input type="text" v-model="partyA" id="partyA" class="input-field" />
 
         <label for="partyB">乙の名前：</label>
         <input type="text" v-model="partyB" id="partyB" class="input-field" />
 
-        <div v-for="(party, index) in parties" :key="index">
+        <div class="flex-container" v-for="(party, index) in parties" :key="index">
           <label :for="'party' + (index + 3)">{{ `${index + 3}の変換対象：` }}</label>
           <input type="text" v-model="parties[index].label" :id="'party' + (index + 3) + '_label'" class="input-field" />
 
@@ -134,6 +134,11 @@ export default {
   width: 400px;
   text-align: center;
   margin-right: 20px;
+}
+
+.flex-container {
+  display: flex;
+  flex-direction: column;
 }
 
 .input-field,
