@@ -2,26 +2,20 @@
   <div id="app">
     <div class="container">
       <div class="form-container flex-container column-container">
-        <label for="partyA">甲の名前：</label>
-        <input type="text" v-model="partyA" id="partyA" class="input-field" />
-
-        <label for="partyB">乙の名前：</label>
-        <input type="text" v-model="partyB" id="partyB" class="input-field" />
-
         <div class="flex-container column-container" v-for="(party, index) in parties" :key="index">
           <div class="flex-container">
             <div>
-              <label :for="'party' + (index + 3)">{{ `${index + 3}の変換対象：` }}</label>
-              <input type="text" v-model="parties[index].label" :id="'party' + (index + 3) + '_label'" class="input-field" />
+              <label :for="'party' + (index + 1)">{{ `${index + 1}の変換対象：` }}</label>
+              <input type="text" v-model="parties[index].label" :id="'party' + (index + 1) + '_label'" class="input-field" />
             </div>
 
             <div>
-              <label :for="'party' + (index + 3) + '_name'">{{ '変換したい名前：' }}</label>
-              <input type="text" v-model="parties[index].name" :id="'party' + (index + 3) + '_name'" class="input-field" />
+              <label :for="'party' + (index + 1) + '_name'">{{ '変換したい名前：' }}</label>
+              <input type="text" v-model="parties[index].name" :id="'party' + (index + 1) + '_name'" class="input-field" />
             </div>
           </div>
 
-          <button @click="removeParty(index)" class="remove-party-button">削除</button>
+          <button @click="removeParty(index)" v-if="1 < index" class="remove-party-button">削除</button>
         </div>
 
         <button @click="addParty" class="add-party-button">名前追加</button>
@@ -45,9 +39,7 @@
 export default {
   data() {
     return {
-      partyA: "",
-      partyB: "",
-      parties: [],
+      parties: ["甲", "乙"].map((l) => ({ name: "", label: l })),
       contractText: "",
       generatedContract: "",
     };
@@ -63,9 +55,6 @@ export default {
       });
 
       let replacedContract = this.contractText;
-
-      replacedContract = replacedContract.replace(/甲/g, `<span class="partyA">${this.partyA}</span>`)
-          .replace(/乙/g, `<span class="partyB">${this.partyB}</span>`);
 
       this.parties.forEach(({ name, label }) => {
         const className = `party${label.slice(-1)}`;
@@ -86,10 +75,10 @@ export default {
       const heavenlyStems = ["丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
       let newPartyLabel = "";
 
-      if (this.parties.length < heavenlyStems.length) {
-        newPartyLabel = heavenlyStems[this.parties.length];
+      if (this.parties.length - 2 < heavenlyStems.length) {
+        newPartyLabel = heavenlyStems[this.parties.length - 2];
       } else {
-        newPartyLabel = `名前${this.parties.length + 3}`;
+        newPartyLabel = `名前${this.parties.length + 1}`;
       }
 
       this.parties.push({ name: "", label: newPartyLabel });
@@ -189,14 +178,6 @@ export default {
   border: 1px solid #ddd;
   padding: 10px;
   border-radius: 5px;
-}
-
-.partyA {
-  color: #4caf50;
-}
-
-.partyB {
-  color: #4caf50;
 }
 
 </style>
