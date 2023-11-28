@@ -55,13 +55,19 @@ export default {
       });
 
       let replacedContract = this.contractText;
+      let replacedContractText = this.contractText;
 
       this.parties.forEach(({ name, label }) => {
         const className = `party${label.slice(-1)}`;
         const color = '#4caf50';
-        replacedContract = replacedContract.replace(new RegExp(label, 'g'), `<span class="${className}" style="color: ${color};">${name}</span>`);
+        const pattern = new RegExp(label, 'g');
+        replacedContract = replacedContract.replace(pattern, `<span class="${className}" style="color: ${color};">${name}</span>`);
+        replacedContractText = replacedContractText.replace(pattern, name);
       });
 
+      if (replacedContractText === "") {
+        return "";
+      }
 
       return replacedContract;
     },
