@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.4.0",
+    "vite-plugin-static-copy": "^0.17.1",
     "vite": "^4.4.11"
   }
 }
