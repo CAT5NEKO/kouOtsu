@@ -5,7 +5,7 @@
         <div class="flex-container column-container" v-for="(party, index) in parties" :key="index">
           <div class="flex-container">
             <div>
-              <label :for="'party' + (index + 1)">{{ `${index + 1}の変換対象：` }}</label>
+              <label :for="'party' + (index + 1) + '_label'">{{ `${index + 1}の変換対象：` }}</label>
               <input type="text" v-model="parties[index].label" :id="'party' + (index + 1) + '_label'" class="input-field" />
             </div>
 
