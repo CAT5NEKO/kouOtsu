@@ -22,6 +22,10 @@
 
         <label for="contractText">契約書の文章：</label>
         <textarea v-model="contractText" id="contractText" rows="5" class="textarea-field"></textarea>
+        <div>
+          <label for="pdfFileInput">契約書 (PDF) の文章アップロード：</label>
+          <input id="pdfFileInput" type="file" accept="application/pdf" class="input-field" @change="uploadPDFFile" />
+        </div>
 
         <button @click="generateContract" class="generate-button">変換</button>
       </div>
@@ -36,6 +40,8 @@
 
 
 <script>
+import * as pdfjs from "pdfjs-dist/legacy/build/pdf";
+
 export default {
   data() {
     return {
@@ -91,6 +97,31 @@ export default {
     },
     removeParty(index) {
       this.parties.splice(index, 1);
+    },
+    async uploadPDFFile(e) {
+      pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.js`;
+      const pdfFile = e.target.files.item(0);
+
+      if (pdfFile === null) {
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.addEventListener("load", async () => {
+        const pdf = await pdfjs.getDocument({ data: reader.result }).promise;
+        let pdfText = [];
+
+        for (let p = 1; p <= pdf.numPages; p++) {
+          const pdfPage = await pdf.getPage(p);
+          const pdfContent = await pdfPage.getTextContent();
+          pdfText = pdfText.concat(
+            pdfContent.items.filter((i) => "str" in i).map((i) => i.str),
+          );
+        }
+
+        this.contractText = pdfText.join("\n");
+      });
+      reader.readAsArrayBuffer(pdfFile);
     },
   },
 };
