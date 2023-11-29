@@ -59,7 +59,7 @@ export default {
       const labelSet = new Set();
 
       for (const {name, label} of this.parties) {
-        if (labelSet.has(label)) {
+        if (label === "" || labelSet.has(label)) {
           return "";
         }
 
