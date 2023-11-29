@@ -23,7 +23,7 @@
         <label for="contractText">契約書の文章：</label>
         <textarea v-model="contractText" id="contractText" rows="5" class="textarea-field"></textarea>
         <div>
-          <label for="pdfFileInput">契約書 (PDF) の文章アップロード：</label>
+          <label for="pdfFileInput">契約書 (PDF) から文章入力：</label>
           <input id="pdfFileInput" type="file" accept="application/pdf" class="input-field" @change="uploadPDFFile" />
         </div>
 
