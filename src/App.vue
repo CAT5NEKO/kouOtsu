@@ -42,6 +42,7 @@
 
 <script>
 import * as pdfjs from "pdfjs-dist/legacy/build/pdf";
+import PDFJsWorker from "pdfjs-dist/legacy/build/pdf.worker.min?worker";
 
 export default {
   data() {
@@ -98,7 +99,7 @@ export default {
       this.parties.splice(index, 1);
     },
     async uploadPDFFile(e) {
-      pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.js`;
+      pdfjs.GlobalWorkerOptions.workerPort = new PDFJsWorker();
       const pdfFile = e.target.files.item(0);
 
       if (pdfFile === null) {
@@ -107,7 +108,7 @@ export default {
 
       const reader = new FileReader();
       reader.addEventListener("load", async () => {
-        const pdf = await pdfjs.getDocument({ data: reader.result }).promise;
+        const pdf = await pdfjs.getDocument({data: reader.result, cMapUrl: "./public/cmaps/"}).promise;
         let pdfText = [];
 
         for (let p = 1; p <= pdf.numPages; p++) {
