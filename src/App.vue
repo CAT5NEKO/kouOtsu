@@ -115,7 +115,7 @@ export default {
 
       const reader = new FileReader();
       reader.addEventListener("load", async () => {
-        const pdf = await pdfjs.getDocument({data: reader.result, cMapUrl: "./assets/cmaps/"}).promise;
+        const pdf = await pdfjs.getDocument({data: reader.result, cMapUrl: "./public/cmaps/"}).promise;
         let pdfText = [];
 
         for (let p = 1; p <= pdf.numPages; p++) {
