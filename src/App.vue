@@ -41,7 +41,7 @@
 
 <script>
 import * as pdfjs from "pdfjs-dist/legacy/build/pdf";
-import PDFJsWorker from "pdfjs-dist/legacy/build/pdf.worker.js?worker";
+import PDFJsWorker from "pdfjs-dist/legacy/build/pdf.worker.min?worker";
 
 export default {
   data() {
