@@ -32,7 +32,8 @@
 
       <div v-if="generatedContract" class="result-container">
         <h2>変換されました！</h2>
-        <div v-html="formattedContract" class="generated-text-box"></div>
+        <div v-html="generatedContract" class="generated-text-box"></div>
+        <button @click="copyContract" class="generate-button">コピー</button>
       </div>
     </div>
   </div>
@@ -48,25 +49,21 @@ export default {
       parties: ["甲", "乙"].map((l) => ({ name: "", label: l })),
       contractText: "",
       generatedContract: "",
+      generatedContractText: "",
     };
   },
-  computed: {
-    formattedContract() {
-      let namesAndClasses = this.parties.map(({ name, label }, index) => {
-        return {
-          name,
-          label,
-          class: `party${index + 3}`
-        };
-      });
-
+  methods: {
+    generateContract() {
+      // 生成された契約書を表示
       let replacedContract = this.contractText;
       let replacedContractText = this.contractText;
       const labelSet = new Set();
 
       for (const {name, label} of this.parties) {
         if (label === "" || labelSet.has(label)) {
-          return "";
+          this.generatedContract = "";
+          this.generatedContractText = "";
+          return;
         }
 
         labelSet.add(label);
@@ -78,16 +75,12 @@ export default {
       }
 
       if (replacedContractText === "") {
-        return "";
+        this.generatedContract = "";
+        this.generatedContractText = "";
+      } else {
+        this.generatedContract = replacedContract;
+        this.generatedContractText = replacedContractText;
       }
-
-      return replacedContract;
-    },
-  },
-  methods: {
-    generateContract() {
-      // 生成された契約書を表示
-      this.generatedContract = this.formattedContract;
     },
     addParty() {
       const heavenlyStems = ["丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
@@ -129,6 +122,10 @@ export default {
       });
       reader.readAsArrayBuffer(pdfFile);
     },
+    async copyContract() {
+      await navigator.clipboard.writeText(this.generatedContractText);
+      alert("クリップボードにコピーしました！");
+    }
   },
 };
 </script>
