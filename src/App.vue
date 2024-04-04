@@ -1,6 +1,12 @@
 <template>
   <div id="app">
+    <div class="top-header" :class="{'hidden': isHidden}">
+      <h1>契約書文字変換ツール</h1>
+      <p>契約書の文章中の甲や乙などの特定の文字列を自分の名前や相手の企業に合わせた文字に変換します。</p>
+      <p>pdfファイルをアップロードして文章を変換することもできます。</p>
+    </div>
     <div class="container">
+      <!-- 入力フォーム -->
       <div class="form-container flex-container column-container">
         <div class="flex-container column-container" v-for="(party, index) in parties" :key="index">
           <div class="flex-container">
@@ -15,7 +21,7 @@
             </div>
           </div>
 
-          <button @click="removeParty(index)" v-if="1 < index" class="remove-party-button">削除</button>
+          <button @click="removeParty(index)" v-if="index > 1" class="remove-party-button">削除</button>
         </div>
 
         <button @click="addParty" class="add-party-button">名前追加</button>
@@ -30,15 +36,15 @@
         <button @click="generateContract" class="generate-button">変換</button>
       </div>
 
-      <div v-if="generatedContract" class="result-container">
-        <h2>変換されました！</h2>
-        <div v-html="generatedContract" class="generated-text-box"></div>
+      <!-- 変換後のコンテンツ -->
+      <div class="result-container" v-if="generatedContract">
+        <h2>変換された文章</h2>
+        <div v-html="generatedContract" class="generated-contract"></div>
         <button @click="copyContract" class="generate-button">コピー</button>
       </div>
     </div>
   </div>
 </template>
-
 
 <script>
 import * as pdfjs from "pdfjs-dist/legacy/build/pdf";
@@ -47,20 +53,29 @@ import PDFJsWorker from "pdfjs-dist/legacy/build/pdf.worker.min?worker";
 export default {
   data() {
     return {
-      parties: ["甲", "乙"].map((l) => ({ name: "", label: l })),
+      isHidden: false,
+      parties: [{ name: "", label: "甲" }, { name: "", label: "乙" }],
       contractText: "",
       generatedContract: "",
       generatedContractText: "",
     };
   },
+  mounted() {
+    window.addEventListener('scroll', this.handleScroll);
+  },
+  destroyed() {
+    window.removeEventListener('scroll', this.handleScroll);
+  },
   methods: {
+    handleScroll() {
+      this.isHidden = window.scrollY > 0;
+    },
     generateContract() {
-      // 生成された契約書を表示
       let replacedContract = this.contractText;
       let replacedContractText = this.contractText;
       const labelSet = new Set();
 
-      for (const {name, label} of this.parties) {
+      for (const { name, label } of this.parties) {
         if (label === "" || labelSet.has(label)) {
           this.generatedContract = "";
           this.generatedContractText = "";
@@ -85,18 +100,14 @@ export default {
     },
     addParty() {
       const heavenlyStems = ["丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
-      let newPartyLabel = "";
-
-      if (this.parties.length - 2 < heavenlyStems.length) {
-        newPartyLabel = heavenlyStems[this.parties.length - 2];
-      } else {
-        newPartyLabel = `名前${this.parties.length + 1}`;
-      }
-
+      const newIndex = this.parties.length + 1;
+      const newPartyLabel = newIndex <= heavenlyStems.length ? heavenlyStems[newIndex - 2] : `名前${newIndex}`;
       this.parties.push({ name: "", label: newPartyLabel });
     },
     removeParty(index) {
-      this.parties.splice(index, 1);
+      if (index > 1) {
+        this.parties.splice(index, 1);
+      }
     },
     async uploadPDFFile(e) {
       pdfjs.GlobalWorkerOptions.workerPort = new PDFJsWorker();
@@ -108,14 +119,14 @@ export default {
 
       const reader = new FileReader();
       reader.addEventListener("load", async () => {
-        const pdf = await pdfjs.getDocument({data: reader.result, cMapUrl: "./public/cmaps/"}).promise;
+        const pdf = await pdfjs.getDocument({ data: reader.result, cMapUrl: "./public/cmaps/" }).promise;
         let pdfText = [];
 
         for (let p = 1; p <= pdf.numPages; p++) {
           const pdfPage = await pdf.getPage(p);
           const pdfContent = await pdfPage.getTextContent();
           pdfText = pdfText.concat(
-            pdfContent.items.filter((i) => "str" in i).map((i) => i.str),
+              pdfContent.items.filter((i) => "str" in i).map((i) => i.str),
           );
         }
 
@@ -131,42 +142,59 @@ export default {
 };
 </script>
 
-
 <style>
 #app {
   height: auto;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f0f8ff;
-  color: #282828;
+  background-color: #0a1f31;
+  color: #d6f1eb;
+}
+
+.top-header {
+  position: fixed;
+  font-family: "Arial", sans-serif;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #0a1f31;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: top 0.3s;
+}
+
+.top-header.hidden {
+  top: -100px;
 }
 
 .container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  font-family: "Arial", sans-serif;
+}
+
+.remove-party-button,
+.add-party-button,
+.generate-button {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  font-size: 18px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: "Arial", sans-serif;
 }
 
 .remove-party-button {
   background-color: #d9534f;
-  color: white;
-  padding: 6px 12px;
-  font-size: 14px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-left: 5px;
 }
 
 .add-party-button {
-  background-color: #008CBA;
-  color: white;
-  padding: 6px 12px;
-  font-size: 16px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+  background-color: #008cba;
   margin-top: 10px;
 }
 
@@ -178,6 +206,7 @@ export default {
   width: 400px;
   text-align: center;
   margin-right: 20px;
+  font-family: "Arial", sans-serif;
 }
 
 .flex-container {
@@ -194,31 +223,54 @@ export default {
   padding: 10px;
   margin-bottom: 10px;
   font-size: 16px;
-}
-
-.generate-button {
-  background-color: #4caf50;
-  color: white;
-  padding: 10px 20px;
-  font-size: 18px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+  font-family: "Arial", sans-serif;
 }
 
 .result-container {
   text-align: left;
+  font-family: "Arial", sans-serif;
+  overflow-y: auto;
+  max-height: 500px;
 }
 
-.generated-text-box {
+.generated-contract {
   font-size: 18px;
   color: #333;
   white-space: pre-line;
-  max-height: 300px;
-  overflow-y: auto;
-  border: 1px solid #ddd;
   padding: 10px;
   border-radius: 5px;
+  font-family: "Arial", sans-serif;
 }
 
+@media (max-width: 768px) {
+  .top-header {
+    padding: 7px;
+    font-size: small;
+  }
+
+  .container {
+    padding-top: 120px;
+    width: 100%;
+  }
+
+  .form-container {
+    width: 90%;
+    margin-right: 0;
+  }
+
+  .input-field,
+  .textarea-field {
+    font-size: 14px;
+  }
+
+  .generate-button {
+    font-size: 16px;
+  }
+
+  .generated-contract {
+    font-size: 16px;
+    margin-top: 20px;
+  }
+}
 </style>
+
