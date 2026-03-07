@@ -4,4 +4,3 @@
 [こちら](https://kouotsu.netlify.app)で動作確認ができます。
 
 
-![タイトルなし](https://github.com/CAT5NEKO/kouOtsu/assets/111590457/1399be7d-c0f8-4c39-bcbf-fc1911ba33ba)
