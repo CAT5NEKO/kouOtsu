@@ -9,6 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "docx": "^9.6.1",
+    "dompurify": "^3.3.3",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^4.2.1",
+    "jszip": "^3.10.1",
     "pdfjs-dist": "^3.11.174",
     "vue": "^3.3.4"
   },
