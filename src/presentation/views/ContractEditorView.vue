@@ -5,9 +5,11 @@ import ContractInputArea from '../components/ContractInputArea.vue';
 import ContractResultViewer from '../components/ContractResultViewer.vue';
 
 import type { ContractParty, ContractConversionResult } from '../../shared/types/contract';
+import type { ExportFormat } from '../../shared/types/export';
 import { PdfExtractorDriverImpl } from '../../infrastructure/pdf/pdf-extractor-driver';
 import { ExtractPdfTextUseCase } from '../../application/use-cases/extract-pdf-text';
 import { ProcessContractUseCase } from '../../application/use-cases/process-contract';
+import { ExportContractUseCase } from '../../application/use-cases/export-contract';
 
 const parties = ref<ContractParty[]>([
   { name: '', label: '甲' },
@@ -24,6 +26,7 @@ const isMobileDrawerOpen = ref(true);
 const pdfExtractor = new PdfExtractorDriverImpl();
 const extractPdfUseCase = new ExtractPdfTextUseCase(pdfExtractor);
 const processContractUseCase = new ProcessContractUseCase();
+const exportContractUseCase = new ExportContractUseCase();
 
 const handleAddParty = () => {
   const heavenlyStems = ['丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
@@ -62,6 +65,29 @@ const handleConvert = () => {
   
   if (isMobileDrawerOpen.value) {
     isMobileDrawerOpen.value = false;
+  }
+};
+
+const handleSaveDocument = async (format: ExportFormat) => {
+  if (!conversionResult.value) return;
+
+  try {
+    const exportedFile = await exportContractUseCase.execute(format, {
+      htmlContent: conversionResult.value.htmlContent,
+      textContent: conversionResult.value.textContent,
+    });
+
+    const url = URL.createObjectURL(exportedFile.blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = `契約書_変換結果_${new Date().toISOString().slice(0, 10)}.${exportedFile.extension}`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('保存に失敗しました:', error);
+    alert('文書の保存に失敗しました。');
   }
 };
 
@@ -187,6 +213,7 @@ const hasResult = computed(() => {
             
             <ContractResultViewer 
               :result="conversionResult"
+              @save="handleSaveDocument"
               class="h-full"
             />
           </section>

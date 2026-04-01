@@ -1,12 +1,32 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import type { ContractConversionResult } from '../../shared/types/contract';
+import type { ExportFormat } from '../../shared/types/export';
 
 const props = defineProps<{
   result: ContractConversionResult | null;
 }>();
 
+const emit = defineEmits<{
+  (event: 'save', format: ExportFormat): void;
+}>();
+
 const isCopied = ref(false);
+const selectedFormat = ref<ExportFormat>('txt');
+const isFormatMenuOpen = ref(false);
+const formatMenuRef = ref<HTMLElement | null>(null);
+
+const exportFormats: Array<{ value: ExportFormat; label: string }> = [
+  { value: 'txt', label: 'TXT' },
+  { value: 'docx', label: 'DOCX' },
+  { value: 'odt', label: 'ODT' },
+  { value: 'pdf', label: 'PDF' },
+];
+
+const selectedFormatLabel = computed(() => {
+  const current = exportFormats.find((format) => format.value === selectedFormat.value);
+  return current?.label ?? 'TXT';
+});
 
 const handleCopy = async () => {
   if (!props.result?.textContent) return;
@@ -22,19 +42,38 @@ const handleCopy = async () => {
   }
 };
 
-const handleDownload = () => {
+const handleSave = () => {
   if (!props.result?.textContent) return;
-  
-  const blob = new Blob([props.result.textContent], { type: 'text/plain' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `契約書_変換結果_${new Date().toISOString().slice(0, 10)}.txt`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  emit('save', selectedFormat.value);
 };
+
+const toggleFormatMenu = () => {
+  isFormatMenuOpen.value = !isFormatMenuOpen.value;
+};
+
+const handleSelectFormat = (format: ExportFormat) => {
+  selectedFormat.value = format;
+  isFormatMenuOpen.value = false;
+};
+
+const handleClickOutside = (event: MouseEvent) => {
+  if (!isFormatMenuOpen.value) return;
+  if (!formatMenuRef.value) return;
+
+  const target = event.target;
+  if (!(target instanceof Node)) return;
+  if (!formatMenuRef.value.contains(target)) {
+    isFormatMenuOpen.value = false;
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('click', handleClickOutside);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('click', handleClickOutside);
+});
 </script>
 
 <template>
@@ -62,16 +101,44 @@ const handleDownload = () => {
           </span>
         </button>
 
-        <button 
-          v-if="result?.textContent"
-          @click="handleDownload"
-          class="flex items-center px-3 py-1.5 bg-primary text-white hover:bg-primary-dark rounded shadow-sm font-medium transition-colors gap-2 text-xs"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-          </svg>
-          テキスト保存
-        </button>
+        <div v-if="result?.textContent" ref="formatMenuRef" class="relative">
+          <div class="flex items-stretch rounded shadow-sm overflow-hidden">
+            <button
+              @click="handleSave"
+              class="flex items-center px-3 py-1.5 bg-primary text-white hover:bg-primary-dark font-medium transition-colors gap-2 text-xs"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              {{ selectedFormatLabel }}保存
+            </button>
+
+            <button
+              @click.stop="toggleFormatMenu"
+              class="px-2 py-1.5 bg-primary text-white hover:bg-primary-dark border-l border-primary-dark/50 transition-colors"
+              aria-label="保存形式を選択"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
+
+          <div
+            v-if="isFormatMenuOpen"
+            class="absolute right-0 mt-1 min-w-30 bg-white border border-border rounded shadow-md z-20"
+          >
+            <button
+              v-for="format in exportFormats"
+              :key="format.value"
+              @click="handleSelectFormat(format.value)"
+              class="w-full text-left px-3 py-2 text-xs text-text hover:bg-gray-50"
+              :class="selectedFormat === format.value ? 'bg-gray-100 font-semibold' : ''"
+            >
+              {{ format.label }}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
