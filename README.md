@@ -7,3 +7,10 @@
 
 
 <img width="1919" height="949" alt="{F8B53684-F7AE-4887-88FA-92C1BCD8FF7B}" src="https://github.com/user-attachments/assets/1d38799b-b55d-41d1-b883-5789beea2e14" />
+
+## 保存形式
+
+- 既定の保存形式は TXT
+- 形式選択プルダウンから DOCX / ODT / PDF を選択して保存可能
+- Google Docs 互換は DOCX で対応
+- Office 97 の .doc バイナリ出力は対象外
