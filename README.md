@@ -10,7 +10,10 @@
 
 ## 保存形式
 
-- 既定の保存形式は TXT
+返還後のドキュメントはPDF、DOCX、ODTで保存できるようにしています。  
+デフォルトはTXTです  
+
+- 既定の保存形式はTXT
 - 形式選択プルダウンから DOCX / ODT / PDF を選択して保存可能
-- Google Docs 互換は DOCX で対応
-- Office 97 の .doc バイナリ出力は対象外
+- GoogleDocsは直接対応していませんが DOCXで読み込めます
+- Office 97 の .doc バイナリ出力は対象外です
