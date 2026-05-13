@@ -3,6 +3,7 @@
   "extends": ["config:base"],
   "minimumReleaseAge": "3 days",
   "rangeStrategy": "pin",
+  "dependencyDashboard": false,
   "lockFileMaintenance": {
     "enabled": true,
     "schedule": ["before 3am on monday"]
