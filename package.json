@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "preinstall": "node -e \"if (!process.env.npm_config_user_agent || !process.env.npm_config_user_agent.includes('pnpm')) { console.error('Please use pnpm.'); process.exit(1); }\"",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
